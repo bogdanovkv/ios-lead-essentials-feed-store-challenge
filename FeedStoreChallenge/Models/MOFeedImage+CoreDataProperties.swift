@@ -15,10 +15,24 @@ extension MOFeedImage {
 		return NSFetchRequest<MOFeedImage>(entityName: "MOFeedImage")
 	}
 
-	@NSManaged public var id: UUID?
 	@NSManaged public var feedDescription: String?
+	@NSManaged public var id: UUID
 	@NSManaged public var location: String?
-	@NSManaged public var url: String?
+	@NSManaged public var url: URL
+	@NSManaged public var timeStamp: Date
 }
 
 extension MOFeedImage: Identifiable {}
+
+extension MOFeedImage {
+	func feedImage() -> LocalFeedImage? {
+		guard let feedDescription = feedDescription,
+		      let location = location else {
+			return nil
+		}
+		return .init(id: id,
+		             description: feedDescription,
+		             location: location,
+		             url: url)
+	}
+}
