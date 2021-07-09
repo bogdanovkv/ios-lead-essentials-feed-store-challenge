@@ -96,14 +96,9 @@ public final class CoreDataFeedStore: FeedStore {
 private extension CoreDataFeedStore {
 	func getCache() -> FeedCache {
 		let request = NSFetchRequest<FeedCache>(entityName: "FeedCache")
-		var feedCache: FeedCache?
-		context.performAndWait {
-			if let cache = (try? request.execute())?.first {
-				feedCache = cache
-				return
-			}
-			feedCache = FeedCache(context: context)
+		if let cache = (try? request.execute())?.first {
+			return cache
 		}
-		return feedCache!
+		return FeedCache(context: context)
 	}
 }
