@@ -2,7 +2,7 @@
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="17511" systemVersion="19H2" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
     <entity name="FeedCache" representedClassName="FeedCache" syncable="YES">
         <attribute name="timeStamp" attributeType="Date" usesScalarValueType="NO"/>
-        <relationship name="feedImages" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="MOFeedImage"/>
+        <relationship name="feedImages" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="MOFeedImage" inverseName="relationship" inverseEntity="MOFeedImage"/>
     </entity>
     <entity name="MOFeedImage" representedClassName="MOFeedImage" syncable="YES">
         <attribute name="feedDescription" optional="YES" attributeType="String"/>
@@ -10,9 +10,10 @@
         <attribute name="location" optional="YES" attributeType="String"/>
         <attribute name="timeStamp" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="url" attributeType="URI"/>
+        <relationship name="relationship" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="FeedCache" inverseName="feedImages" inverseEntity="FeedCache"/>
     </entity>
     <elements>
-        <element name="MOFeedImage" positionX="-63" positionY="-18" width="128" height="118"/>
         <element name="FeedCache" positionX="224.51953125" positionY="-55.859375" width="128" height="73"/>
+        <element name="MOFeedImage" positionX="-63" positionY="-18" width="128" height="133"/>
     </elements>
 </model>

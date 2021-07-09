@@ -78,7 +78,6 @@ public final class CoreDataFeedStore: FeedStore {
 
 	public func deleteCachedFeed(completion: @escaping DeletionCompletion) {
 		let request = NSFetchRequest<FeedCache>(entityName: "FeedCache")
-		var feedCache: FeedCache?
 		let currentContext = context
 		currentContext.performAndWait {
 			do {
@@ -87,6 +86,7 @@ public final class CoreDataFeedStore: FeedStore {
 				try context.save()
 				completion(nil)
 			} catch {
+				currentContext.rollback()
 				completion(error)
 			}
 		}
