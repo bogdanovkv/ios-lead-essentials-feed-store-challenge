@@ -30,14 +30,18 @@ public final class CoreDataFeedStore: FeedStore {
 
 	public func retrieve(completion: @escaping RetrievalCompletion) {
 		context.perform {
-			let request = NSFetchRequest<MOFeedImage>(entityName: "MOFeedImage")
+			let request = NSFetchRequest<FeedCache>(entityName: "FeedCache")
 			do {
-				let result = try request.execute()
-				let models = result.compactMap({ $0.feedImage() })
-				if models.isEmpty {
+				guard let cache = try request.execute().first,
+				      let images = cache.feedImages?.array as? [MOFeedImage] else {
 					return completion(.empty)
 				}
-				completion(.found(feed: models, timestamp: result[0].timeStamp))
+
+				if images.isEmpty {
+					return completion(.empty)
+				}
+				completion(.found(feed: images.map({ $0.feedImage() }),
+				                  timestamp: cache.timeStamp))
 			} catch {
 				completion(.failure(error))
 			}
@@ -46,15 +50,22 @@ public final class CoreDataFeedStore: FeedStore {
 
 	public func insert(_ feed: [LocalFeedImage], timestamp: Date, completion: @escaping InsertionCompletion) {
 		let currentContext = context
-		currentContext.perform {
-			feed.forEach { image in
-				let _ = MOFeedImage.create(contex: self.context,
-				                           timeStamp: timestamp,
-				                           id: image.id,
-				                           description: image.description,
-				                           location: image.location,
-				                           url: image.url)
+		currentContext.perform { [weak self] in
+			guard let self = self else { return }
+			let moImages = feed.map { image in
+				return MOFeedImage.create(contex: self.context,
+				                          timeStamp: timestamp,
+				                          id: image.id,
+				                          description: image.description,
+				                          location: image.location,
+				                          url: image.url)
 			}
+			let cache = self.getCache()
+			cache.timeStamp = timestamp
+			if let imagesSet = cache.feedImages {
+				cache.removeFromFeedImages(imagesSet)
+			}
+			cache.addToFeedImages(NSOrderedSet(array: moImages))
 			do {
 				try currentContext.save()
 				completion(nil)
@@ -66,5 +77,20 @@ public final class CoreDataFeedStore: FeedStore {
 
 	public func deleteCachedFeed(completion: @escaping DeletionCompletion) {
 		fatalError("Must be implemented")
+	}
+}
+
+private extension CoreDataFeedStore {
+	func getCache() -> FeedCache {
+		let request = NSFetchRequest<FeedCache>(entityName: "FeedCache")
+		var feedCache: FeedCache?
+		context.performAndWait {
+			if let cache = (try? request.execute())?.first {
+				feedCache = cache
+				return
+			}
+			feedCache = FeedCache(context: context)
+		}
+		return feedCache!
 	}
 }

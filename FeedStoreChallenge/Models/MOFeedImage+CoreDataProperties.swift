@@ -25,11 +25,7 @@ extension MOFeedImage {
 extension MOFeedImage: Identifiable {}
 
 extension MOFeedImage {
-	func feedImage() -> LocalFeedImage? {
-		guard let feedDescription = feedDescription,
-		      let location = location else {
-			return nil
-		}
+	func feedImage() -> LocalFeedImage {
 		return .init(id: id,
 		             description: feedDescription,
 		             location: location,

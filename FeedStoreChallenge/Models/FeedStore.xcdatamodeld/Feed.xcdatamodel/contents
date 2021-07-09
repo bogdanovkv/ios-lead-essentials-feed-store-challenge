@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="17511" systemVersion="19H2" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+    <entity name="FeedCache" representedClassName="FeedCache" syncable="YES">
+        <attribute name="timeStamp" attributeType="Date" usesScalarValueType="NO"/>
+        <relationship name="feedImages" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="MOFeedImage"/>
+    </entity>
     <entity name="MOFeedImage" representedClassName="MOFeedImage" syncable="YES">
         <attribute name="feedDescription" optional="YES" attributeType="String"/>
         <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
@@ -9,5 +13,6 @@
     </entity>
     <elements>
         <element name="MOFeedImage" positionX="-63" positionY="-18" width="128" height="118"/>
+        <element name="FeedCache" positionX="224.51953125" positionY="-55.859375" width="128" height="73"/>
     </elements>
 </model>
