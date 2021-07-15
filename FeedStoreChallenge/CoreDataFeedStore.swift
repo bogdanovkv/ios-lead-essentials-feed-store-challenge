@@ -30,10 +30,11 @@ public final class CoreDataFeedStore: FeedStore {
 
 	public func retrieve(completion: @escaping RetrievalCompletion) {
 		context.perform {
-			let request = NSFetchRequest<FeedCache>(entityName: "FeedCache")
+			let request: NSFetchRequest<FeedCache> = FeedCache.fetchRequest()
 			do {
 				guard let cache = try request.execute().first,
-				      let images = cache.feedImages?.array as? [MOFeedImage] else {
+				      let images = cache.feedImages.array as? [MOFeedImage],
+				      !images.isEmpty else {
 					return completion(.empty)
 				}
 
@@ -54,7 +55,6 @@ public final class CoreDataFeedStore: FeedStore {
 			guard let self = self else { return }
 			let moImages = feed.map { image in
 				return MOFeedImage.create(contex: self.context,
-				                          timeStamp: timestamp,
 				                          id: image.id,
 				                          description: image.description,
 				                          location: image.location,
@@ -62,9 +62,7 @@ public final class CoreDataFeedStore: FeedStore {
 			}
 			let cache = self.getCache()
 			cache.timeStamp = timestamp
-			if let imagesSet = cache.feedImages {
-				cache.removeFromFeedImages(imagesSet)
-			}
+			cache.removeFromFeedImages(cache.feedImages)
 			cache.addToFeedImages(NSOrderedSet(array: moImages))
 			do {
 				try currentContext.save()
@@ -77,7 +75,7 @@ public final class CoreDataFeedStore: FeedStore {
 	}
 
 	public func deleteCachedFeed(completion: @escaping DeletionCompletion) {
-		let request = NSFetchRequest<FeedCache>(entityName: "FeedCache")
+		let request: NSFetchRequest<FeedCache> = FeedCache.fetchRequest()
 		let currentContext = context
 		currentContext.performAndWait {
 			do {
@@ -95,7 +93,7 @@ public final class CoreDataFeedStore: FeedStore {
 
 private extension CoreDataFeedStore {
 	func getCache() -> FeedCache {
-		let request = NSFetchRequest<FeedCache>(entityName: "FeedCache")
+		let request: NSFetchRequest<FeedCache> = FeedCache.fetchRequest()
 		if let cache = (try? request.execute())?.first {
 			return cache
 		}

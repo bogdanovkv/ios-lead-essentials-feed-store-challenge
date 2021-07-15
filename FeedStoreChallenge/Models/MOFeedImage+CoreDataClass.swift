@@ -13,15 +13,13 @@ import CoreData
 @objc(MOFeedImage)
 public class MOFeedImage: NSManagedObject {
 	static func create(contex: NSManagedObjectContext,
-	                   timeStamp: Date,
 	                   id: UUID,
 	                   description: String?,
 	                   location: String?,
 	                   url: URL) -> MOFeedImage {
 		let image = MOFeedImage(context: contex)
-		image.timeStamp = timeStamp
 		image.id = id
-		image.feedDescription = description
+		image.imageDescription = description
 		image.location = location
 		image.url = url
 		return image

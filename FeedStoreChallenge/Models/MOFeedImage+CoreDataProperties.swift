@@ -11,23 +11,16 @@ import Foundation
 import CoreData
 
 extension MOFeedImage {
-	@nonobjc public class func fetchRequest() -> NSFetchRequest<MOFeedImage> {
-		return NSFetchRequest<MOFeedImage>(entityName: "MOFeedImage")
-	}
-
-	@NSManaged public var feedDescription: String?
-	@NSManaged public var id: UUID
-	@NSManaged public var location: String?
-	@NSManaged public var url: URL
-	@NSManaged public var timeStamp: Date
+	@NSManaged var imageDescription: String?
+	@NSManaged var id: UUID
+	@NSManaged var location: String?
+	@NSManaged var url: URL
 }
-
-extension MOFeedImage: Identifiable {}
 
 extension MOFeedImage {
 	func feedImage() -> LocalFeedImage {
 		return .init(id: id,
-		             description: feedDescription,
+		             description: imageDescription,
 		             location: location,
 		             url: url)
 	}
